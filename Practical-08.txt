@@ -1,0 +1,110 @@
+PRACTICAL 8 — CREATING RESTFUL SERVICES
+
+Create ASP.NET Core Web API.
+Project name: StudentAPI
+Authentication: None
+
+Step 1: Models/Student.cs
+
+namespace StudentAPI.Models;
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+}
+
+Step 2: Controllers/StudentController.cs
+
+using Microsoft.AspNetCore.Mvc;
+using StudentAPI.Models;
+
+namespace StudentAPI.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class StudentController : ControllerBase
+{
+    static List<Student> students = new List<Student>
+    {
+        new Student { Id = 1, Name = "Devesh" },
+        new Student { Id = 2, Name = "Rahul" }
+    };
+
+    [HttpGet]
+    public IActionResult Get()
+    {
+        return Ok(students);
+    }
+
+    [HttpPost]
+    public IActionResult Add(Student student)
+    {
+        students.Add(student);
+        return Ok(student);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, Student student)
+    {
+        var oldStudent = students.Find(s => s.Id == id);
+
+        if (oldStudent == null)
+            return NotFound();
+
+        oldStudent.Name = student.Name;
+
+        return Ok(oldStudent);
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        var student = students.Find(s => s.Id == id);
+
+        if (student == null)
+            return NotFound();
+
+        students.Remove(student);
+
+        return Ok(student);
+    }
+}
+
+Step 3: Run
+Ctrl + F5
+Use Swagger if available.
+
+Endpoint:
+/api/Student
+
+GET:
+GET /api/Student
+
+POST:
+POST /api/Student
+{
+  "id": 3,
+  "name": "Amit"
+}
+
+PUT:
+PUT /api/Student/1
+{
+  "id": 1,
+  "name": "Devesh Updated"
+}
+
+DELETE:
+DELETE /api/Student/1
+
+HTTP operations:
+GET = Read
+POST = Create
+PUT = Update
+DELETE = Delete
+
+VIVA:
+A RESTful service is an API using HTTP methods such as GET, POST, PUT and DELETE to perform operations on resources.
+[ApiController] marks the controller as an API controller.
+[Route("api/[controller]")] defines the API route.
